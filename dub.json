@@ -1,0 +1,12 @@
+{
+	"name": "hackd",
+	"description": "Procedural dungeon cralwer",
+	"copyright": "Copyright © 2015, Stefan Brus",
+	"authors": ["Stefan Brus"],
+	"dependencies": {
+        "adlib": {
+            "version": "~master",
+            "path": "../adlib"
+        }
+	}
+}
