@@ -17,11 +17,11 @@ struct Tile
     bool passable;
 }
 
-enum Floor = Tile(' ', true),
+enum Empty = Tile(' ', true),
      Wall  = Tile('#', false);
 
 enum TileMap = [
-    ' ': Floor,
+    ' ': Empty,
     '#': Wall
 ];
 
@@ -44,7 +44,7 @@ enum SimpleRoom = [
     "########################"
 ];
 
-struct Room
+struct Floor
 {
     Tile[24][16] tiles;
 
@@ -77,7 +77,7 @@ struct Player
 
 class Hackd : IGame
 {
-    private Room room;
+    private Floor floor;
 
     private Player player;
 
@@ -89,7 +89,7 @@ class Hackd : IGame
 
     void init ( )
     {
-        this.room = Room(SimpleRoom);
+        this.floor = Floor(SimpleRoom);
         this.player = Player(10, 10, Tile('P', false));
 
         this.tile_set = TileSet("# P");
@@ -106,7 +106,7 @@ class Hackd : IGame
         auto tile_w = this.tile_set['#'].width,
              tile_h = this.tile_set['#'].height;
 
-        foreach ( y, row; this.room )
+        foreach ( y, row; this.floor )
         {
             foreach ( x, col; row )
             {
@@ -139,22 +139,22 @@ class Hackd : IGame
         {
             case SDL.Event.SCAN_UP:
                 if ( this.player.y > 0 &&
-                     this.room[this.player.y - 1][this.player.x].passable )
+                     this.floor[this.player.y - 1][this.player.x].passable )
                     this.player.y--;
                 break;
             case SDL.Event.SCAN_LEFT:
                 if ( this.player.x > 0 &&
-                     this.room[this.player.y][this.player.x - 1].passable )
+                     this.floor[this.player.y][this.player.x - 1].passable )
                     this.player.x--;
                 break;
             case SDL.Event.SCAN_DOWN:
                 if ( this.player.y < 15 &&
-                     this.room[this.player.y + 1][this.player.x].passable )
+                     this.floor[this.player.y + 1][this.player.x].passable )
                     this.player.y++;
                 break;
             case SDL.Event.SCAN_RIGHT:
                 if ( this.player.x < 23 &&
-                     this.room[this.player.y][this.player.x + 1].passable )
+                     this.floor[this.player.y][this.player.x + 1].passable )
                     this.player.x++;
                 break;
             default:
