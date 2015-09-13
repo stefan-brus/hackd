@@ -17,30 +17,30 @@ struct Tile
     bool passable;
 }
 
-enum Empty = Tile(' ', true),
+enum Empty = Tile('.', true),
      Wall  = Tile('#', false);
 
 enum TileMap = [
-    ' ': Empty,
+    '.': Empty,
     '#': Wall
 ];
 
 enum SimpleRoom = [
     "########################",
-    "#                      #",
-    "#                      #",
-    "#                      #",
-    "#                      #",
-    "#                      #",
-    "#                      #",
-    "#                      #",
-    "#                      #",
-    "#                      #",
-    "#                      #",
-    "#                      #",
-    "#                      #",
-    "#                      #",
-    "#                      #",
+    "#......................#",
+    "#......................#",
+    "#......................#",
+    "#......................#",
+    "#......................#",
+    "#......................#",
+    "#......................#",
+    "#......................#",
+    "#......................#",
+    "#......................#",
+    "#......................#",
+    "#......................#",
+    "#......................#",
+    "#......................#",
     "########################"
 ];
 
@@ -77,9 +77,21 @@ struct Player
 
 class Hackd : IGame
 {
+    /**
+     * The floor
+     */
+
     private Floor floor;
 
+    /**
+     * The player
+     */
+
     private Player player;
+
+    /**
+     * The tileset
+     */
 
     private TileSet tile_set;
 
@@ -92,7 +104,7 @@ class Hackd : IGame
         this.floor = Floor(SimpleRoom);
         this.player = Player(10, 10, Tile('P', false));
 
-        this.tile_set = TileSet("# P");
+        this.tile_set = TileSet("#.P");
     }
 
     /**
@@ -104,20 +116,21 @@ class Hackd : IGame
         GL.clear(GL.COLOR_BUFFER_BIT);
 
         auto tile_w = this.tile_set['#'].width,
-             tile_h = this.tile_set['#'].height;
+             tile_h = this.tile_set['#'].height / 2;
 
         foreach ( y, row; this.floor )
         {
             foreach ( x, col; row )
             {
                 auto tile = this.tile_set[col.chr];
-                tile.setPos(x * tile_w, y * tile_h / 2);
+                tile.setPos(x * tile_w + 400 - this.player.x * tile_w,
+                            y * tile_h + 300 - this.player.y * tile_h);
                 tile.draw();
             }
         }
 
         auto player_tile = this.tile_set[this.player.tile.chr];
-        player_tile.setPos(this.player.x * tile_w, this.player.y * tile_h / 2);
+        player_tile.setPos(400, 300);
         player_tile.draw();
 
         GL.flush();

@@ -49,6 +49,11 @@ struct TileSet
      */
 
     TextEntity opIndex ( char chr )
+    in
+    {
+        assert(chr in this.tile_set);
+    }
+    body
     {
         return this.tile_set[chr];
     }
