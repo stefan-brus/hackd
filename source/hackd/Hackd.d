@@ -58,7 +58,7 @@ class Hackd : IGame
     void init ( )
     {
         this.floor_gen = new FloorGenerator();
-        this.floor = floor_gen.generate(50, 20);
+        this.floor = floor_gen.generate(100, 50);
         this.player = Player(10, 10, Tile('P', false));
 
         this.tile_set = TileSet("#.P");
