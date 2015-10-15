@@ -4,64 +4,14 @@
 
 module hackd.Hackd;
 
+import hackd.Floor;
+import hackd.FloorGenerator;
 import hackd.TileSet;
 
 import adlib.ui.entity.TextEntity;
 import adlib.ui.model.IGame;
 import adlib.ui.GL;
 import adlib.ui.SDL;
-
-struct Tile
-{
-    char chr;
-    bool passable;
-}
-
-enum Empty = Tile('.', true),
-     Wall  = Tile('#', false);
-
-enum TileMap = [
-    '.': Empty,
-    '#': Wall
-];
-
-enum SimpleRoom = [
-    "########################",
-    "#......................#",
-    "#......................#",
-    "#......................#",
-    "#......................#",
-    "#......................#",
-    "#......................#",
-    "#......................#",
-    "#......................#",
-    "#......................#",
-    "#......................#",
-    "#......................#",
-    "#......................#",
-    "#......................#",
-    "#......................#",
-    "########################"
-];
-
-struct Floor
-{
-    Tile[24][16] tiles;
-
-    alias tiles this;
-
-    this ( char[24][16] room_str )
-    {
-        foreach ( i, row; room_str )
-        {
-            foreach ( j, col; row )
-            {
-                assert(col in TileMap);
-                this.tiles[i][j] = TileMap[col];
-            }
-        }
-    }
-}
 
 struct Player
 {
@@ -78,7 +28,13 @@ struct Player
 class Hackd : IGame
 {
     /**
-     * The floor
+     * The floor generator
+     */
+
+    private FloorGenerator floor_gen;
+
+    /**
+     * The current floor
      */
 
     private Floor floor;
@@ -101,7 +57,8 @@ class Hackd : IGame
 
     void init ( )
     {
-        this.floor = Floor(SimpleRoom);
+        this.floor_gen = new FloorGenerator();
+        this.floor = floor_gen.generate(50, 20);
         this.player = Player(10, 10, Tile('P', false));
 
         this.tile_set = TileSet("#.P");
@@ -161,12 +118,12 @@ class Hackd : IGame
                     this.player.x--;
                 break;
             case SDL.Event.SCAN_DOWN:
-                if ( this.player.y < 15 &&
+                if ( this.player.y < this.floor.height - 1 &&
                      this.floor[this.player.y + 1][this.player.x].passable )
                     this.player.y++;
                 break;
             case SDL.Event.SCAN_RIGHT:
-                if ( this.player.x < 23 &&
+                if ( this.player.x < this.floor.width - 1 &&
                      this.floor[this.player.y][this.player.x + 1].passable )
                     this.player.x++;
                 break;
