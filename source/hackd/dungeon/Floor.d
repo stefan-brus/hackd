@@ -2,7 +2,7 @@
  * Floor struct
  */
 
-module hackd.Floor;
+module hackd.dungeon.Floor;
 
 /**
  * Tile struct

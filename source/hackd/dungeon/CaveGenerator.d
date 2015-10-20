@@ -1,20 +1,21 @@
 /**
- * The hyperdynamic floor generator
+ * The hyperdynamic cave generator
  *
  * Uses the algorithm described here:
  * http://www.roguebasin.com/index.php?title=Cellular_Automata_Method_for_Generating_Random_Cave-Like_Levels
  */
 
-module hackd.FloorGenerator;
+module hackd.dungeon.CaveGenerator;
 
-import hackd.Floor;
+import hackd.dungeon.Floor;
+import hackd.dungeon.model.IFloorGenerator;
 
 
 /**
- * FloorGenerator class
+ * CaveGenerator class
  */
 
-class FloorGenerator
+class CaveGenerator : IFloorGenerator
 {
     /**
      * Some starter tiles to experiment with
@@ -72,7 +73,7 @@ class FloorGenerator
      *      height = The floor height
      */
 
-    Floor generate ( size_t width, size_t height )
+    override Floor generate ( size_t width, size_t height )
     {
         auto floor = Floor(width, height);
 

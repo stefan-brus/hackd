@@ -4,8 +4,8 @@
 
 module hackd.Hackd;
 
-import hackd.Floor;
-import hackd.FloorGenerator;
+import hackd.dungeon.Floor;
+import hackd.dungeon.CaveGenerator;
 import hackd.TileSet;
 
 import adlib.ui.entity.TextEntity;
@@ -28,10 +28,10 @@ struct Player
 class Hackd : IGame
 {
     /**
-     * The floor generator
+     * The cave generator
      */
 
-    private FloorGenerator floor_gen;
+    private CaveGenerator cave_gen;
 
     /**
      * The current floor
@@ -57,8 +57,8 @@ class Hackd : IGame
 
     void init ( )
     {
-        this.floor_gen = new FloorGenerator();
-        this.floor = floor_gen.generate(100, 50);
+        this.cave_gen = new CaveGenerator();
+        this.floor = cave_gen.generate(100, 50);
         this.player = Player(10, 10, Tile('P', false));
 
         this.tile_set = TileSet("#.P");
