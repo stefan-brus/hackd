@@ -89,27 +89,27 @@ class FloorGenerator
             }
         }
 
-        uint wallsWithinSteps ( int x, int y, int n )
+        uint wallsWithinSteps ( int row, int col, int n )
         {
-            bool isWall ( int x, int y )
+            bool isWall ( int row, int col )
             {
-                if ( y < 0 || x < 0 || y >= floor.height - 1 || x >= floor.width - 1 )
+                if ( row < 0 || col < 0 || row >= floor.height - 1 || col >= floor.width - 1 )
                 {
                     return true;
                 }
                 else
                 {
-                    return floor[y][x] == Wall;
+                    return floor[row][col] == Wall;
                 }
             }
 
             uint result;
 
-            for ( int i = x - n; i < x + n + 1; i++ )
+            for ( int i = row - n; i < row + n + 1; i++ )
             {
-                for ( int j = y - n; j < y + n + 1; j++ )
+                for ( int j = col - n; j < col + n + 1; j++ )
                 {
-                    if ( !(i == x && j == y) && isWall(i, j) )
+                    if ( !(i == row && j == col) && isWall(i, j) )
                     {
                         result++;
                     }
@@ -121,30 +121,38 @@ class FloorGenerator
 
         void generatePaths ( )
         {
+            auto new_floor = Floor(width, height);
+
             for ( auto iter = 0; iter < this.config.path_iterations; iter++ )
             {
-                foreach ( i, ref row; floor )
+                foreach ( i, ref row; new_floor )
                 {
                     foreach ( j, ref col; row )
                     {
-                        col = wallsWithinSteps(j, i, 1) >= 5 || wallsWithinSteps(j, i, 4) <= 2 ? Wall : col;
+                        col = wallsWithinSteps(i, j, 1) >= 5 || wallsWithinSteps(i, j, 4) <= 2 ? Wall : floor[i][j];
                     }
                 }
             }
+
+            floor = new_floor;
         }
 
         void smoothenMap ( )
         {
+            auto new_floor = Floor(width, height);
+
             for ( auto iter = 0; iter < this.config.smooth_iterations; iter++ )
             {
-                foreach ( i, ref row; floor )
+                foreach ( i, ref row; new_floor )
                 {
                     foreach ( j, ref col; row )
                     {
-                        col = wallsWithinSteps(j, i, 1) >= 5 ? Wall : col;
+                        col = wallsWithinSteps(j, i, 1) >= 5 ? Wall : floor[i][j];
                     }
                 }
             }
+
+            floor = new_floor;
         }
 
         initMap();
