@@ -4,8 +4,9 @@
 
 module hackd.Hackd;
 
-import hackd.dungeon.Floor;
-import hackd.dungeon.CaveGenerator;
+import hackd.dungeon.model.ILevelGenerator;
+import hackd.dungeon.Level;
+import hackd.dungeon.RoomsGenerator;
 import hackd.TileSet;
 
 import adlib.ui.entity.TextEntity;
@@ -28,16 +29,16 @@ struct Player
 class Hackd : IGame
 {
     /**
-     * The cave generator
+     * The Level generator
      */
 
-    private CaveGenerator cave_gen;
+    private ILevelGenerator level_gen;
 
     /**
-     * The current floor
+     * The current level
      */
 
-    private Floor floor;
+    private Level level;
 
     /**
      * The player
@@ -57,11 +58,11 @@ class Hackd : IGame
 
     void init ( )
     {
-        this.cave_gen = new CaveGenerator();
-        this.floor = cave_gen.generate(100, 50);
+        this.level_gen = new RoomsGenerator();
+        this.level = level_gen.generate(100, 50);
         this.player = Player(10, 10, Tile('P', false));
 
-        this.tile_set = TileSet("#.P");
+        this.tile_set = TileSet("#. P");
     }
 
     /**
@@ -75,7 +76,7 @@ class Hackd : IGame
         auto tile_w = this.tile_set['#'].width,
              tile_h = this.tile_set['#'].height / 2;
 
-        foreach ( y, row; this.floor )
+        foreach ( y, row; this.level )
         {
             foreach ( x, col; row )
             {
@@ -109,22 +110,22 @@ class Hackd : IGame
         {
             case SDL.Event.SCAN_UP:
                 if ( this.player.y > 0 &&
-                     this.floor[this.player.y - 1][this.player.x].passable )
+                     this.level[this.player.y - 1][this.player.x].passable )
                     this.player.y--;
                 break;
             case SDL.Event.SCAN_LEFT:
                 if ( this.player.x > 0 &&
-                     this.floor[this.player.y][this.player.x - 1].passable )
+                     this.level[this.player.y][this.player.x - 1].passable )
                     this.player.x--;
                 break;
             case SDL.Event.SCAN_DOWN:
-                if ( this.player.y < this.floor.height - 1 &&
-                     this.floor[this.player.y + 1][this.player.x].passable )
+                if ( this.player.y < this.level.height - 1 &&
+                     this.level[this.player.y + 1][this.player.x].passable )
                     this.player.y++;
                 break;
             case SDL.Event.SCAN_RIGHT:
-                if ( this.player.x < this.floor.width - 1 &&
-                     this.floor[this.player.y][this.player.x + 1].passable )
+                if ( this.player.x < this.level.width - 1 &&
+                     this.level[this.player.y][this.player.x + 1].passable )
                     this.player.x++;
                 break;
             default:

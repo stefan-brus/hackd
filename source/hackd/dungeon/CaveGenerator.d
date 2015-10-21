@@ -7,24 +7,16 @@
 
 module hackd.dungeon.CaveGenerator;
 
-import hackd.dungeon.Floor;
-import hackd.dungeon.model.IFloorGenerator;
+import hackd.dungeon.model.ILevelGenerator;
+import hackd.dungeon.Level;
 
 
 /**
  * CaveGenerator class
  */
 
-class CaveGenerator : IFloorGenerator
+class CaveGenerator : ILevelGenerator
 {
-    /**
-     * Some starter tiles to experiment with
-     */
-
-    enum Empty = Tile('.', true);
-
-    enum Wall = Tile('#', false);
-
     /**
      * The generator configuration
      */
@@ -66,22 +58,25 @@ class CaveGenerator : IFloorGenerator
     }
 
     /**
-     * Generate a random floor of the given dimensions
+     * Generate a random level of the given dimensions
      *
      * Params:
-     *      width = The floor width
-     *      height = The floor height
+     *      width = The level width
+     *      height = The level height
+     *
+     * Returns:
+     *      The generated level
      */
 
-    override Floor generate ( size_t width, size_t height )
+    override Level generate ( size_t width, size_t height )
     {
-        auto floor = Floor(width, height);
+        auto level = Level(width, height);
 
         void initMap ( )
         {
             import std.random;
 
-            foreach ( ref row; floor )
+            foreach ( ref row; level )
             {
                 foreach ( ref col; row )
                 {
@@ -94,13 +89,13 @@ class CaveGenerator : IFloorGenerator
         {
             bool isWall ( int row, int col )
             {
-                if ( row < 0 || col < 0 || row >= floor.height - 1 || col >= floor.width - 1 )
+                if ( row < 0 || col < 0 || row >= level.height - 1 || col >= level.width - 1 )
                 {
                     return true;
                 }
                 else
                 {
-                    return floor[row][col] == Wall;
+                    return level[row][col] == Wall;
                 }
             }
 
@@ -122,44 +117,44 @@ class CaveGenerator : IFloorGenerator
 
         void generatePaths ( )
         {
-            auto new_floor = Floor(width, height);
+            auto new_level = Level(width, height);
 
             for ( auto iter = 0; iter < this.config.path_iterations; iter++ )
             {
-                foreach ( i, ref row; new_floor )
+                foreach ( i, ref row; new_level )
                 {
                     foreach ( j, ref col; row )
                     {
-                        col = wallsWithinSteps(i, j, 1) >= 5 || wallsWithinSteps(i, j, 4) <= 2 ? Wall : floor[i][j];
+                        col = wallsWithinSteps(i, j, 1) >= 5 || wallsWithinSteps(i, j, 4) <= 2 ? Wall : level[i][j];
                     }
                 }
             }
 
-            floor = new_floor;
+            level = new_level;
         }
 
         void smoothenMap ( )
         {
-            auto new_floor = Floor(width, height);
+            auto new_level = Level(width, height);
 
             for ( auto iter = 0; iter < this.config.smooth_iterations; iter++ )
             {
-                foreach ( i, ref row; new_floor )
+                foreach ( i, ref row; new_level )
                 {
                     foreach ( j, ref col; row )
                     {
-                        col = wallsWithinSteps(j, i, 1) >= 5 ? Wall : floor[i][j];
+                        col = wallsWithinSteps(j, i, 1) >= 5 ? Wall : level[i][j];
                     }
                 }
             }
 
-            floor = new_floor;
+            level = new_level;
         }
 
         initMap();
         generatePaths();
         smoothenMap();
 
-        return floor;
+        return level;
     }
 }
